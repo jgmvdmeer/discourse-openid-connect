@@ -69,7 +69,11 @@ module ::OmniAuth
       def authorize_params
         super.tap do |params|
           options[:passthrough_authorize_options].each do |k|
-            params[k] = request.params[k.to_s] unless [nil, ''].include?(request.params[k.to_s])
+            #            params[k] = request.params[k.to_s] unless [nil, ''].include?(request.params[k.to_s])
+# jvdm introduced next two lines to handle parameter in field 'openid connect authorize parameters'
+# jvdm we need something like kc_idp_hint=xxxxx where xxxx in community indication
+            k = k.split("=")
+            session["omniauth.#{k.first}"] = params[k.first] = k.last
           end
 
           if options[:claims].present?
